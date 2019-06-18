@@ -45,8 +45,7 @@ class App extends Component<Props> {
   }
 
   componentDidMount() {
-    // BleManager.start();
-    BleManager.start({ showAlert: false }).then(() => {
+    BleManager.start().then(() => {
       console.log("Module initialized...");
     });
     this.startScan();
@@ -114,12 +113,14 @@ class App extends Component<Props> {
 
   fetchRfid = () => {
     const id = "54:4A:16:7B:79:25";
+    // const serviceId = "0000FFE0-0000-1000-8000-00805F9B34FB";
+    // const characterID = "0000FFE1-0000-1000-8000-00805F9B34FB";
     const serviceId = "FFE0";
     const characterID = "FFE1";
-    // const cmdCommand = "$SYC7866#";
-    const cmdCommand = "SYC";
+    const cmdCommand = "$SYC7866#";
+    // const cmdCommand = "SYC";
     const data = stringToBytes(cmdCommand);
-    console.log("data", data);
+    console.log("data..", data);
 
     BleManager.write(id, serviceId, characterID, data)
       .then(() => {
@@ -127,8 +128,8 @@ class App extends Component<Props> {
         console.log("Write: " + result);
         BleManager.read(id, serviceId, characterID)
           .then(readData => {
-            const result = bytesToString(readData);
-            console.log("Read: " + readData);
+            // const result = bytesToString(readData);
+            console.log("Read: .." + readData);
           })
           .catch(error => {
             console.log(error);
