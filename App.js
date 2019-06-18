@@ -46,9 +46,20 @@ class App extends Component<Props> {
 
   componentDidMount() {
     // BleManager.start();
+
     BleManager.start({ showAlert: false }).then(() => {
       console.log("Module initialized...");
     });
+
+    bleManagerEmitter.addListener(
+      'BleManagerDidUpdateValueForCharacteristic',
+      (data) => {
+        const result = bytesToString(data.value);
+        console.log('Data from the listener: ', result);
+      }
+    );
+
+
     this.startScan();
     this.handlerDiscover = bleManagerEmitter.addListener(
       "BleManagerDiscoverPeripheral",
@@ -103,36 +114,45 @@ class App extends Component<Props> {
     BleManager.connect(id)
       .then(() => {
         console.log("Connected");
+        BleManager.retrieveServices(id)
+        .then((peripheralInfo) => {
+          // Success code
+          console.log('Peripheral info:', peripheralInfo);
+          BleManager.startNotification("54:4A:16:7B:79:25", "FFE0", "FFE1")
+            .then(() => {
+              // Success code
+              console.log('Notification started');
+            })
+            .catch((error) => {
+              // Failure code
+              console.log(error);
+            });
+        });
       })
       .catch(error => {
         console.log("error", error);
       });
-    BleManager.retrieveServices(id).then(peripheralInfo => {
-      console.log("peripheralInfo data", peripheralInfo);
-    });
+    // BleManager.retrieveServices(id).then(peripheralInfo => {
+    //   console.log("peripheralInfo data", peripheralInfo);
+    // });
+
   };
 
   fetchRfid = () => {
     const id = "54:4A:16:7B:79:25";
     const serviceId = "FFE0";
     const characterID = "FFE1";
+    const notificationID = "2902";
     // const cmdCommand = "$SYC7866#";
-    const cmdCommand = "SYC";
+    const cmdCommand = "$GHI7866#";
+    // const cmdCommand = "SYC";
     const data = stringToBytes(cmdCommand);
-    console.log("data", data);
+    // console.log("data", data);
 
     BleManager.write(id, serviceId, characterID, data)
       .then(() => {
         const result = bytesToString(data);
         console.log("Write: " + result);
-        BleManager.read(id, serviceId, characterID)
-          .then(readData => {
-            const result = bytesToString(readData);
-            console.log("Read: " + readData);
-          })
-          .catch(error => {
-            console.log(error);
-          });
       })
       .catch(error => {
         console.log(error);
