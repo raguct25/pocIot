@@ -10,7 +10,7 @@
     "buffer": "^5.2.1",
     "bytes-counter": "^1.0.0",
     "convert-string": "^0.1.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "react": "16.8.3",
     "react-native": "0.59.9",
     "react-native-ble-manager": "^6.6.6",
